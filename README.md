@@ -9,7 +9,7 @@ And because it's fun :)
 1. Clone the repository:
 
     ```bash
-    git clone [insert url to the repository]
+    git clone https://github.com/Matthew-Linders/stock_ticker.git
     ```
 
 2. Create a virtual environment (optional but recommended):
