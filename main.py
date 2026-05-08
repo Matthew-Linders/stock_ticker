@@ -1,58 +1,21 @@
 # Example file showing a circle moving on screen
 import pygame
+import board 
 
-def drawBoard():
-    board = pygame.Surface((screen.get_width(), (screen.get_height() // 5)*3))
-    board = board.convert() #Ensures the same pizel format as the display seurface.
-    board.fill((0, 0, 0))
-
-    drawGrid(board)
-
-    # Display The Background
-    screen.blit(board, (0, 0))
-
-def drawGrid(surface):
-    WHITE = (250, 250, 250) # White for line colour
-    BLACK = (0, 0, 0)
-
-    WIDTH = surface.get_width()//41 #Set the size of the grid block
-    HEIGHT = surface.get_height()//7
-
-    GOLD = (255, 176, 57) # Orange
-    SILVER = (220,220,220) # Grey
-    OIL = (255, 217, 158) # Pale orange
-    BONDS = (207, 253, 188) # Pale green
-    INDUST = (255, 196, 218) # Pale pink
-    GRAIN = (253, 233, 146) # Pale yellow
-    colours = [WHITE, GOLD, SILVER, OIL, BONDS, INDUST, GRAIN, WHITE]
-
-    num = 0
-    names = ["", "Gold", "Silver", "Oil", "Bonds", "Indust.", "Grain"]
-
-    for x in range(0, surface.get_width(), WIDTH):
-        for y in range(0, surface.get_height(), HEIGHT): #In theory we only need 6
-            rect = pygame.Rect(x, y, WIDTH, HEIGHT)
-            pygame.draw.rect(surface, colours[y//HEIGHT], rect, 0)
-            pygame.draw.rect(surface, BLACK, rect, 1)
-
-            if (y==0 and x>0):
-                pygame.font.init()
-                font = pygame.Font(None, 30)
-                text = font.render((f"{num}"), False, BLACK)
-                text = pygame.transform.rotate(text, -90)
-                surface.blit(text, rect)
-                num += 5
-    
-            if (x==0 and (y//HEIGHT)<7):
-                font2 = pygame.Font(None, 25)
-                name = font2.render((f"{names[y//HEIGHT]}"), False, BLACK)
-                name = pygame.transform.rotate(name, -90)
-                surface.blit(name, rect)
-            
+# https://chatgpt.com/share/69fd572c-9f04-83ea-a39d-acd1b886c1db -> Do this next time
+# Currently the baord is redrawing every frame. 
+# And everything is being drawn on the same surface (screen)
+# So if you only draw the board once, then the circle (or eventual pieces) are being drawn permenantly on it each frame.
+# And that is really not good.
+# So the path is:
+#   Make the board drawing part of board's init
+#   Put the background and the tokens and the board on different layers/surfaces
 
 # pygame setup
 pygame.init()
-screen = pygame.display.set_mode((1250, 650))
+screen = pygame.display.set_mode((1260, 650))
+# SHould be able to use get_desktop_sizes() to make the screen the same size as the user's actual screen
+gameBoard = board.Board()
 pygame.display.set_caption("Stock Ticker")
 clock = pygame.time.Clock()
 running = True
@@ -67,9 +30,9 @@ while running:
         if event.type == pygame.QUIT:
             running = False
 
-    # fill the screen with a color to wipe away anything from last frame
-    screen.fill("purple")
-    drawBoard()
+    # Fill the screen with a color to wipe away anything from last frame and draw the board
+    screen.fill("white")
+    gameBoard.drawBoard(screen)
 
     pygame.draw.circle(screen, "red", player_pos, 40)
 
